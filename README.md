@@ -36,8 +36,7 @@ Id   | Name
 20   | Rainbow FFA - Hint: Use with "setAcid(true)"
 
 ## Console Commands
-The current available console commands are listed here. Command names are not case sensitive, but player names are. Note: To affect unnamed players, add 2 spaces after the command and then add any other parameters the command requires. Ex. (Treat the underscores as spaces) "mass__200", "kill__", or "color__0 0 250" 
-
+The current available console commands are listed here. Command names are not case sensitive, but config settings are.
  - Addbot [Number]
    * Adds [Number] of bots to the server. If an amount is not specified, 1 bot will be added.
  - Ban [IP]
@@ -68,6 +67,8 @@ The current available console commands are listed here. Command names are not ca
    * Shows a list of connected players, their IP, player ID, the amount of cells they have, total mass, and their position. 
  - Pause
    * Pauses/Unpauses the game.
+ - Select [Gameserver ID]
+   * Selects the specified server. All commands will affect the selected server. Only available when the master server is running.
  - Status
    * Shows the amount of players currently connected, time elasped, memory usage (memory used/memory allocated), and the current gamemode.
  - Tp [Player ID] [X position] [Y position]
