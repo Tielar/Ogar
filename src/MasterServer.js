@@ -58,13 +58,14 @@ MasterServer.prototype.start = function() {
                 var post = qs.parse(body);
 
                 // Data
-                var key = Object.keys(post)[0];
-                var mode = post[key];
+                //var key = Object.keys(post)[0];
+                //var mode = post[key];
+                var key = Object.keys(post)[0].split(':')[0];
 
                 // Send
                 res.setHeader('Access-Control-Allow-Origin', '*');
                 res.writeHead(200);
-                res.end(MS.getServer(key,mode));
+                res.end(MS.getServer(key));
             });
         } else if ((req.method == 'GET') && (req.url = "/info")) {
             res.setHeader('Access-Control-Allow-Origin', '*');
@@ -89,7 +90,7 @@ MasterServer.prototype.getNextID = function() {
     return this.lastID++;
 }
 
-MasterServer.prototype.getServer = function(key,mode) {
+MasterServer.prototype.getServer = function(key) {
     var gs = this.REGIONS[key][Math.floor(Math.random() * this.REGIONS[key].length)];
     return this.config.serverIP+':'+gs.config.serverPort;
 }
@@ -137,6 +138,7 @@ MasterServer.prototype.loadConfig = function() {
 
                 this.REGIONS[key].push(gs);
                 this.gameServers.push(gs);
+
                 this.selected.server = gs;
             }
         }
