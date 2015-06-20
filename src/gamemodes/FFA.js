@@ -5,6 +5,7 @@ function FFA() {
 
     this.ID = 0;
     this.name = "Free For All";
+    this.nameID = "";
     this.specByLeaderboard = true;
 }
 

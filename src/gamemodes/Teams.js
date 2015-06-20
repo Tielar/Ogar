@@ -5,6 +5,7 @@ function Teams() {
 
     this.ID = 0;
     this.name = "Teams";
+    this.nameID = "teams";
     this.decayMod = 1.5;
     this.packetLB = 50;
     this.haveTeams = true;

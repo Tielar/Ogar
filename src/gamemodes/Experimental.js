@@ -9,6 +9,7 @@ function Experimental() {
 
     this.ID = 2;
     this.name = "Experimental";
+    this.nameID = "experimental";
     this.specByLeaderboard = true;
     
     // Gamemode Specific Variables

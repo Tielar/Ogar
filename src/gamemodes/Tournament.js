@@ -5,6 +5,7 @@ function Tournament() {
 
     this.ID = 10;
     this.name = "Tournament";
+    this.nameID = "tourney";
     this.packetLB = 48;
 
     // Config (1 tick = 2000 ms)

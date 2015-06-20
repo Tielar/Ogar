@@ -6,6 +6,7 @@ function HungerGames() {
 
     this.ID = 11;
     this.name = "Hunger Games";
+    this.nameID = "hungergames";
 
     // Gamemode Specific Variables
     this.maxContenders = 12;

@@ -7,6 +7,7 @@ function Rainbow() {
 
     this.ID = 20;
     this.name = "Rainbow FFA";
+    this.nameID = "rainbowffa";
     this.specByLeaderboard = true;
     
     this.colors = [

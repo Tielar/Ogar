@@ -60,14 +60,19 @@ MasterServer.prototype.start = function() {
                 var post = qs.parse(body);
 
                 // Data
-                //var key = Object.keys(post)[0];
-                //var mode = post[key];
-                var key = Object.keys(post)[0].split(':')[0];
+                var key = Object.keys(post)[0];
 
-                // Send
+                if (key in MS.REGIONS) {
+                    // Send if region exists
+                    post = MS.getServer(key);
+                } else {
+                    // Region does not exist!
+                    post = "0.0.0.0";
+                }
+
                 res.setHeader('Access-Control-Allow-Origin', '*');
                 res.writeHead(200);
-                res.end(MS.getServer(key));
+                res.end(post);
             });
         } else if ((req.method == 'GET') && (req.url = "/info")) {
             res.setHeader('Access-Control-Allow-Origin', '*');
