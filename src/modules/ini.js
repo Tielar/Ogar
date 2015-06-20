@@ -116,10 +116,15 @@ function decode (str) {
         // array by accidentally forgetting the brackets
         if (Array.isArray(p[key])) {
             p[key].push(value);
-        } else if (isInt(value)) {
-            p[key] = parseInt(value);
+        }
+        if (isNaN(value)) {
+            p[key] = value;
         } else {
-            p[key] = parseFloat(value);
+            if (isInt(value)) {
+                p[key] = parseInt(value);
+            } else {
+                p[key] = parseFloat(value);
+            }  
         }
     });
 

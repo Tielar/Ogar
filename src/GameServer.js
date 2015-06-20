@@ -12,9 +12,9 @@ var Gamemode = require('./gamemodes');
 var BotLoader = require('./ai/BotLoader.js');
 
 // GameServer implementation
-function GameServer() {
-    // Start msg
-    console.log("[Game] Ogar - An open source Agar.io server implementation");
+function GameServer(realmID,confile) {
+    // Master server stuff
+    this.realmID = realmID;
 
     // Startup 
     this.run = true;
@@ -81,7 +81,7 @@ function GameServer() {
         tourneyAutoFillPlayers: 1, // The timer for filling the server with bots will not count down unless there is this amount of real players
     };
     // Parse config
-    this.loadConfig();
+    this.loadConfig(confile);
 
     // Gamemodes
     this.gameMode = Gamemode.get(this.config.serverGamemode);
@@ -118,15 +118,15 @@ GameServer.prototype.start = function() {
         setInterval(this.mainLoop.bind(this), 1);
 
         // Done
-        console.log("[Game] Listening on port %d", this.config.serverPort);
-        console.log("[Game] Current game mode is "+this.gameMode.name);
+        console.log("[Game:"+this.realmID+"] Game Server started at port %d", this.config.serverPort);
+        console.log("[Game:"+this.realmID+"] Current game mode is "+this.gameMode.name);
 
         // Player bots (Experimental)
         if (this.config.serverBots > 0) {
             for (var i = 0;i < this.config.serverBots;i++) {
                 this.bots.addBot();
             }
-            console.log("[Game] Loaded "+this.config.serverBots+" player bots");
+            console.log("[Game:"+this.realmID+"] Loaded "+this.config.serverBots+" player bots");
         }
     }.bind(this));
 
@@ -135,7 +135,7 @@ GameServer.prototype.start = function() {
     function connectionEstablished(ws) {
         if (this.clients.length > this.config.serverMaxConnections) { // Server full
             ws.close();
-            console.log("[Game] Client tried to connect, but server player limit has been reached!");
+            console.log("[Game:"+this.realmID+"] Client tried to connect, but server player limit has been reached!");
             return;
         } else if (this.banned.indexOf(ws._socket.remoteAddress) != -1) { // Banned
             ws.close();
@@ -765,10 +765,10 @@ GameServer.prototype.updateCells = function() {
     }
 };
 
-GameServer.prototype.loadConfig = function() {
+GameServer.prototype.loadConfig = function(confile) {
     try {
         // Load the contents of the config file
-        var load = ini.parse(fs.readFileSync('./gameserver.ini', 'utf-8'));
+        var load = ini.parse(fs.readFileSync(confile, 'utf-8'));
 
         // Replace all the default config's values with the loaded config's values
         for (var obj in load) {
@@ -776,10 +776,10 @@ GameServer.prototype.loadConfig = function() {
         }
     } catch (err) {
         // No config
-        console.log("[Game] Config not found... Generating new config");
+        console.log("[Game:"+this.realmID+"] Config not found... Generating new config");
 
         // Create a new config
-        fs.writeFileSync('./gameserver.ini', ini.stringify(this.config));
+        fs.writeFileSync(confile, ini.stringify(this.config));
     }
 };
 
