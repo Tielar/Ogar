@@ -181,6 +181,11 @@ GameServer.prototype.start = function() {
     }
 };
 
+GameServer.prototype.getName = function() {
+    // Gets the name of this server. For use in the console
+    return "[Game:"+this.realmID+"]";
+}
+
 GameServer.prototype.getMode = function() {
     return this.gameMode;
 };

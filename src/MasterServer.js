@@ -10,9 +10,9 @@ var Commands = require('./modules/CommandList');
 function MasterServer(selected) {
     this.gameServers = [];
     this.realmID = 0; // An id of 0 is reserved for the master server
-    this.lastID = 1;
-    this.selected = selected;
-    this.commands = Commands.master;
+    this.lastID = 1; // DONT CHANGE
+    this.selected = selected; // Selected server for commands
+    this.commands = Commands.master; // Special set of commands for the master server
 
     this.config = {
         serverIP: "127.0.0.1",
@@ -173,7 +173,7 @@ MasterServer.prototype.addServer = function(key) {
     // Add to region/server list
     this.REGIONS[key].push(gs);
     gs.region = key; // Gameserver variable
-    this.gameServers.push(gs); 
+    this.gameServers[id - 1] = gs; 
 };
 
 MasterServer.prototype.removeServer = function(id,log) {

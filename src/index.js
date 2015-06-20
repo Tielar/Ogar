@@ -24,13 +24,11 @@ process.argv.forEach(function(val) {
         showConsole = false;
         debug = true;
     } else if (val == "--help") {
-        console.log("Proper Usage: %s [--master] [--game]", process.argv[0]);
+        console.log("Proper Usage: node index.js [--master]");
         console.log("    --master            Run the Agar master server.");
         console.log("    --noconsole         Disables the console");
         console.log("    --debug             Debug log");
         console.log("    --help              Help menu.");
-        console.log("");
-        console.log("You can use both options simultaneously to run both the master and game server.");
         console.log("");
     }
 });
@@ -79,6 +77,6 @@ function parseCommands(str) {
     if (typeof execute != 'undefined') {
         execute(selected.server,split,masterServer);
     } else {
-        console.log("[Game:"+selected.server.realmID+"] Invalid Command!");
+        console.log(selected.server.getName()+" Invalid Command!");
     }
 };
