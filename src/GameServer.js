@@ -101,6 +101,10 @@ function GameServer(realmID,confile) {
         {'r': 80, 'g':170, 'b':240},
         {'r': 55, 'g': 92, 'b':255},
     ];
+
+    // Debug
+    this.debug = false;
+    this.tickDebug = 0;
 }
 
 module.exports = GameServer;
@@ -310,10 +314,13 @@ GameServer.prototype.mainLoop = function() {
             this.lb_packet = new Packet.UpdateLeaderboard(this.leaderboard,this.gameMode.packetLB);
 
             this.tickMain = 0; // Reset
+
+            // Debug
+            if (this.debug) console.log("Tick Delay: "+this.tickDebug+" ms");
         }
 
         // Debug
-        //console.log(this.tick - 50);
+        if (this.debug) this.tickDebug = this.tick - 50;
 
         // Reset
         this.tick = 0;

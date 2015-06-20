@@ -6,6 +6,7 @@ var runMaster = false;
 var showConsole = true;
 
 var masterServer;
+var debug = false;
 
 var selected = function consoleObj() {
     this.server;
@@ -19,10 +20,14 @@ process.argv.forEach(function(val) {
         runMaster = true;
     }  else if (val == "--noconsole") {
         showConsole = false;
+    } else if (val == "--debug") {
+        showConsole = false;
+        debug = true;
     } else if (val == "--help") {
         console.log("Proper Usage: %s [--master] [--game]", process.argv[0]);
         console.log("    --master            Run the Agar master server.");
         console.log("    --noconsole         Disables the console");
+        console.log("    --debug             Debug log");
         console.log("    --help              Help menu.");
         console.log("");
         console.log("You can use both options simultaneously to run both the master and game server.");
@@ -40,6 +45,7 @@ if (runMaster) {
     GameServer = require('./GameServer');
     var gameServer = new GameServer(1,'./gameserver.ini');
     gameServer.start();
+    gameServer.debug = debug;
     // Add command handler
     gameServer.commands = Commands.list;
     selected.server = gameServer; // Selects this server
