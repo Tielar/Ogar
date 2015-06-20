@@ -1,12 +1,16 @@
+// Imports
 var http = require('http');
 var qs = require('querystring');
 var fs = require("fs");
 var ini = require('./modules/ini.js');
-var GameServer = require('./GameServer');
 
-function MasterServer() {
+var GameServer = require('./GameServer');
+var Commands = require('./modules/CommandList');
+
+function MasterServer(selected) {
     this.gameServers = [];
     this.lastID = 1;
+    this.selected = selected;
 
     this.config = {
         serverIP: "127.0.0.1",
@@ -128,8 +132,12 @@ MasterServer.prototype.loadConfig = function() {
                 var gs = new GameServer(id,'./gameserver'+id+'.ini');
                 gs.config.serverPort = this.config.gameserverPort+id;
                 gs.start(); // Start server
+                // Command handler
+                gs.commands = Commands.list;
 
                 this.REGIONS[key].push(gs);
+                this.gameServers.push(gs);
+                this.selected.server = gs;
             }
         }
     } catch (err) {
@@ -140,4 +148,14 @@ MasterServer.prototype.loadConfig = function() {
         fs.writeFileSync('./masterserver.ini', ini.stringify(this.config));
     }
 };
+
+MasterServer.prototype.swap = function(id) {
+    var gs = this.gameServers[id - 1];
+    if (gs) {
+        this.selected.server = gs;
+        console.log("[Master] Successfully switched to Game Server "+id);
+    } else {
+        console.log("[Master] Invalid game server selected!");
+    }
+}
 

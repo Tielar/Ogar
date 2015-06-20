@@ -6,7 +6,10 @@ var runMaster = false;
 var showConsole = true;
 
 var masterServer;
-var gameServer;
+
+var selected = function consoleObj() {
+    this.server;
+}
 
 // Start msg
 console.log("[Ogar] An open source Agar.io server implementation");
@@ -30,7 +33,7 @@ process.argv.forEach(function(val) {
 if (runMaster) {
     // Initialize the master server
     MasterServer = require('./MasterServer');
-    masterServer = new MasterServer();
+    masterServer = new MasterServer(selected);
     masterServer.start();
 } else {
     // Initialize the game server
@@ -39,18 +42,20 @@ if (runMaster) {
     gameServer.start();
     // Add command handler
     gameServer.commands = Commands.list;
-    // Initialize the server console
-    if (showConsole) {
-        var readline = require('readline');
-        var in_ = readline.createInterface({ input: process.stdin, output: process.stdout });
-        setTimeout(prompt, 100);
-    }
+    selected.server = gameServer; // Selects this server
+}
+
+// Initialize the server console
+if (showConsole) {
+    var readline = require('readline');
+    var in_ = readline.createInterface({ input: process.stdin, output: process.stdout });
+    setTimeout(prompt, 100);
 }
 
 // Console functions
 
 function prompt() {
-    in_.question(">", function(str) {
+    in_.question("<"+selected.server.realmID+">", function(str) {
     	parseCommands(str);
         return prompt(); // Too lazy to learn async
     });	
@@ -64,10 +69,10 @@ function parseCommands(str) {
     var first = split[0].toLowerCase();
 
     // Get command function
-    var execute = gameServer.commands[first];
+    var execute = selected.server.commands[first];
     if (typeof execute != 'undefined') {
-        execute(gameServer,split);
+        execute(selected.server,split,masterServer);
     } else {
-        console.log("[Console] Invalid Command!");
+        console.log("[Game:"+selected.server.realmID+"] Invalid Command!");
     }
 };
