@@ -9,8 +9,10 @@ var Commands = require('./modules/CommandList');
 
 function MasterServer(selected) {
     this.gameServers = [];
+    this.realmID = 0; // An id of 0 is reserved for the master server
     this.lastID = 1;
     this.selected = selected;
+    this.commands = Commands.master;
 
     this.config = {
         serverIP: "127.0.0.1",
@@ -86,6 +88,11 @@ MasterServer.prototype.start = function() {
 
 };
 
+MasterServer.prototype.getName = function() {
+    // Gets the name of this server. For use in the console
+    return "[Master]";
+}
+
 MasterServer.prototype.getNextID = function() {
     return this.lastID++;
 }
@@ -129,18 +136,13 @@ MasterServer.prototype.loadConfig = function() {
             this.REGIONS[key] = [];
 
             for (var i = 0; i < ii; i++) {
-                var id = this.getNextID();
-                var gs = new GameServer(id,'./gameserver'+id+'.ini');
-                gs.config.serverPort = this.config.gameserverPort+id;
-                gs.start(); // Start server
-                // Command handler
-                gs.commands = Commands.list;
-
-                this.REGIONS[key].push(gs);
-                this.gameServers.push(gs);
-
-                this.selected.server = gs;
+                this.addServer(key);
             }
+        }
+
+        // Intial selection
+        if (this.gameServers[0]) {
+            this.selected.server = this.gameServers[0];
         }
     } catch (err) {
         // No config
@@ -151,13 +153,58 @@ MasterServer.prototype.loadConfig = function() {
     }
 };
 
+// Server management
+
+MasterServer.prototype.addServer = function(key) {
+    var id = this.getNextID(); // Get new ID
+
+    var gs = new GameServer(id,'./gameserver'+id+'.ini');
+    gs.config.serverPort = this.config.gameserverPort+id;
+    gs.start(); // Start server
+
+    // Command handler
+    gs.commands = Commands.list;
+
+    // Add to region/server list
+    this.REGIONS[key].push(gs);
+    gs.region = key; // Gameserver variable
+    this.gameServers.push(gs); 
+};
+
+MasterServer.prototype.removeServer = function(id,log) {
+    // Game server
+    var gs = this.gameServers[id - 1];
+    if (gs) {
+        this.gameServers.splice((id - 1),1,null); // Replace with null to keep the array in order
+
+        var index = this.REGIONS[gs.region].indexOf(gs);
+        if (index > -1) { // Remove from region array
+            this.REGIONS[gs.region].splice(index,1);
+        }
+        
+        gs.socketServer.close(); // Remove
+        if (log) console.log(this.getName()+" Removed Game Server with ID: "+id);
+    } else {
+        if (log) console.log(this.getName()+" Invalid game server selected!");
+    }
+};
+
+// Console commands
+
 MasterServer.prototype.swap = function(id) {
+    if (id == 0) {
+        // User wants to slect the master server
+        this.selected.server = this;
+        console.log(this.getName()+" Switched to Master Server");
+        return;
+    }
+
+    // Game server
     var gs = this.gameServers[id - 1];
     if (gs) {
         this.selected.server = gs;
-        console.log("[Master] Successfully switched to Game Server "+id);
+        console.log(this.getName()+" Switched to Game Server "+id);
     } else {
-        console.log("[Master] Invalid game server selected!");
+        console.log(this.getName()+" Invalid game server selected!");
     }
 }
-
