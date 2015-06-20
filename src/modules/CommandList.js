@@ -124,9 +124,6 @@ Commands.list = {
             }
         }
     },
-    debug: function(gameServer,split) {
-        parseName(split,1);
-    },
     food: function(gameServer,split) {
         var pos = {x: parseInt(split[1]), y: parseInt(split[2])};
         var mass = parseInt(split[3]);
@@ -346,5 +343,51 @@ Commands.list = {
         var v = new Entity.Virus(gameServer.getNextNodeId(), null, pos, mass);
         gameServer.addNode(v);
         console.log("[Game:"+gameServer.realmID+"] Spawned 1 virus at ("+pos.x+" , "+pos.y+")");
+    },
+};
+
+// Master server commands
+
+Commands.master = {
+    add: function(masterServer,split) {
+        if (typeof masterServer.REGIONS[split[1]] == 'undefined') {
+            console.log(masterServer.getName()+" Invalid region name!");
+        } else {
+            // Adds
+            masterServer.addServer(split[1]);
+        }
+    },
+    select: function(masterServer,split) {
+        var id = parseInt(split[1]);
+        if (isNaN(id)) {
+            console.log(masterServer.getName()+" Please specify a realm ID!");
+            return;
+        }
+
+        if (masterServer) {
+            masterServer.swap(id);
+        } else {
+            console.log(masterServer.getName()+" Master server not found!");
+        }
+    },
+    serverlist: function(masterServer) {
+        console.log(masterServer.getName()+" Showing connected servers: ");
+        for (var i in masterServer.gameServers) {
+            var gs = masterServer.gameServers[i];
+
+            if (gs) { // Do not show deleted game servers
+                console.log("ID: "+gs.realmID+"  Port: "+gs.config.serverPort+"  Mode: "+gs.gameMode.name+"  Players: "+gs.clients.length+"/"+gs.config.serverMaxConnections);
+            }
+        }
+    },
+    remove: function(masterServer,split) {
+        var id = parseInt(split[1]);
+        if (isNaN(id)) {
+            console.log(masterServer.getName()+" Please specify a realm ID!");
+            return;
+        }
+
+        // Removes
+        masterServer.removeServer(id,true);
     },
 };
